@@ -15,6 +15,7 @@ private:
 	const int TREE_X = 810;
 	const int TREE_Y = 0;
 	const std::string windowName = "Timber!!!";
+
 	const std::string pathBackgroundGraphic = 
 		"res/assets/graphics/background.png";
 	const std::string pathTreeGraphic = 
@@ -24,10 +25,13 @@ private:
 	const std::string pathCloudGraphic =
 		"res/assets/graphics/cloud.png";
 
+	bool isPaused = true;
+
 	sf::RenderWindow* window;
 	sf::VideoMode* videoMode;
 	sf::Event* event;
 
+	sf::Clock dtClock;
 
 	sf::Texture textureBackground;
 	sf::Sprite spriteBackground;
@@ -43,15 +47,17 @@ private:
 	sf::Texture textureCloud;
 	sf::Sprite spriteCloud01;
 	bool isCloud01Active = false;
-	float Cloud01Speed = 0.0f;
+	float cloud01Speed = 0.0f;
 	sf::Sprite spriteCloud02;
 	bool isCloud02Active = false;
-	float Cloud02Speed = 0.0f;
+	float cloud02Speed = 0.0f;
 	sf::Sprite spriteCloud03;
 	bool isCloud03Active = false;
-	float Cloud03Speed = 0.0f;
+	float cloud03Speed = 0.0f;
 
-	void SetupSprites();
+	void SetupSprite(std::string path, sf::Texture& texture,
+		float posX, float posY, sf::Sprite& spriteToSet);
+	void DrawSprites();
 
 };
 
