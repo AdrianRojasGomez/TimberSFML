@@ -14,24 +14,53 @@ private:
 	const int SCREEN_Y = 1080;
 	const int TREE_X = 810;
 	const int TREE_Y = 0;
+
 	const std::string windowName = "Timber!!!";
 
-	const std::string pathBackgroundGraphic = 
+	const std::string pathBackgroundGraphic =
 		"res/assets/graphics/background.png";
-	const std::string pathTreeGraphic = 
+	const std::string pathTreeGraphic =
 		"res/assets/graphics/tree.png";
 	const std::string pathBeeGraphic =
 		"res/assets/graphics/bee.png";
 	const std::string pathCloudGraphic =
 		"res/assets/graphics/cloud.png";
 
-	bool isPaused = true;
+	const std::string pathFont =
+		"res/assets/fonts/FugazOne-Regular.ttf";
+
 
 	sf::RenderWindow* window;
 	sf::VideoMode* videoMode;
 	sf::Event* event;
 
 	sf::Clock dtClock;
+
+	bool isPaused = true;
+
+	sf::RectangleShape timeBar;
+	float timeBarStartWidth = 400;
+	float timeBarHeight = 80;
+
+	sf::Time gameTimeTotal;
+	float timeRemaining = 6.0f;
+	float timeBarWidthPerSecond = timeBarStartWidth / timeRemaining;
+
+	sf::Font font;
+	sf::Text messageText;
+	int sizeWelcomeText = 75;
+	float posMessageX = 1920 / 2;
+	float posMessageY = 1080 / 2;
+	std::string messageString =
+		"Press Enter To Start!";
+
+	sf::Text scoreText;
+	int sizeScoreText = 100;
+	float posScoreX = 250;
+	float posScoreY = 50;
+	int score = 0;
+	const std::string STRING_SCORE_TEXT =
+		"Score = 0";
 
 	sf::Texture textureBackground;
 	sf::Sprite spriteBackground;
@@ -57,7 +86,13 @@ private:
 
 	void SetupSprite(std::string path, sf::Texture& texture,
 		float posX, float posY, sf::Sprite& spriteToSet);
+	void SetupText(std::string path, sf::Font& font,
+		sf::Text& text, std::string stringToShow, int size);
+	void PositionText(sf::Text& text, float posX, float posY);
+	void CreateBar(sf::RectangleShape& bar, float width, float height);
+
 	void DrawSprites();
+	void DrawText();
 
 };
 

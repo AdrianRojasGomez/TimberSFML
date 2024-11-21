@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include "Game.h"
 
 Game::Game()
@@ -11,7 +12,11 @@ Game::Game()
 	SetupSprite(pathCloudGraphic, textureCloud, 0.0f, 0.0f, spriteCloud01);
 	SetupSprite(pathCloudGraphic, textureCloud, 0.0f, 250, spriteCloud02);
 	SetupSprite(pathCloudGraphic, textureCloud, 0.0f, 500, spriteCloud03);
-
+	SetupText(pathFont, font, messageText, messageString, sizeWelcomeText);
+	SetupText(pathFont, font, scoreText, STRING_SCORE_TEXT, sizeScoreText);
+	PositionText(messageText, posMessageX, posMessageY);
+	PositionText(scoreText, posScoreX, posScoreY);
+	CreateBar(timeBar, timeBarStartWidth, timeBarHeight);
 }
 
 Game::~Game()
@@ -48,13 +53,31 @@ void Game::Run()
 				window->close();
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+			{
 				isPaused = false;
+				timeRemaining = 6.0f;
+				dtClock.restart();
+
+			}
 
 		}
 
-		if (!isPaused) 
+		if (!isPaused)
 		{
+			//restart dt clock
 			sf::Time dt = dtClock.restart();
+
+			//modify time bar
+			timeRemaining -= dt.asSeconds();
+			timeBar.setSize(sf::Vector2f(timeBarWidthPerSecond * timeRemaining, timeBarHeight));
+
+			if (timeRemaining <= 0.0f)
+			{
+				isPaused = true;
+				messageText.setString("Out of time!");
+				PositionText(messageText, posMessageX, posMessageY);
+			}
+
 
 			//Update the bee
 			if (!isbeeActive)
@@ -132,9 +155,16 @@ void Game::Run()
 			}
 			if (spriteCloud03.getPosition().x > SCREEN_X)
 				isCloud03Active = false;
+
+			std::stringstream ss;
+			ss << "Score = " << score;
+			scoreText.setString(ss.str());
 		}
 
+		window->clear();
 		DrawSprites();
+		DrawText();
+		window->display();
 	}
 
 }
@@ -150,14 +180,49 @@ void Game::SetupSprite(std::string path, sf::Texture& texture, float posX, float
 		std::cout << "ERROR LOADING" << path << "TEXTURE\n";
 }
 
+void Game::SetupText(std::string path, sf::Font& font, sf::Text& text, std::string stringToShow, int size)
+{
+	if (font.loadFromFile(path))
+	{
+		text.setString(stringToShow);
+		text.setFillColor(sf::Color::White);
+		text.setCharacterSize(size);
+		text.setFont(font);
+		text.setOutlineColor(sf::Color::Black);
+		text.setOutlineThickness(2);
+	}
+	else
+		std::cout << "ERROR LOADING" << path << "TEXTURE\n";
+}
+
+void Game::PositionText(sf::Text& text, float posX, float posY)
+{
+	sf::FloatRect rect = text.getLocalBounds();
+	text.setOrigin((rect.left + rect.width) / 2, (rect.top + rect.height) / 2);
+	text.setPosition(posX, posY);
+
+}
+
+void Game::CreateBar(sf::RectangleShape& bar, float width, float height)
+{
+	bar.setSize(sf::Vector2f(width, height));
+	bar.setFillColor(sf::Color::Red);
+	bar.setPosition((1920 / 2) - timeBarStartWidth / 2, 980);
+}
+
 void Game::DrawSprites()
 {
-	window->clear();
 	window->draw(spriteBackground);
 	window->draw(spriteCloud01);
 	window->draw(spriteCloud02);
 	window->draw(spriteCloud03);
 	window->draw(spriteTree);
 	window->draw(spriteBee);
-	window->display();
+	window->draw(timeBar);
+}
+
+void Game::DrawText()
+{
+	window->draw(messageText);
+	window->draw(scoreText);
 }
